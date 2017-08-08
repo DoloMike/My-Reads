@@ -16,20 +16,25 @@ class BooksApp extends Component {
       })
   }
 
-  changeShelf(book, shelf) {
-    const booksCopy = this.state.books
-    const updatedCopy = booksCopy.map(bk => {
-      if(bk.id === book.id) {
-        bk.shelf = shelf
+  updateShelfs = (book, shelf) => {
+    let addedBook = true
+    const updatedBooks = this.state.books.map(b => {
+      if(b.id === book.id) {
+        b.shelf = shelf
+        addedBook = false
       }
 
-      return bk
+      return b
     })
 
-    BooksAPI.update(book, shelf).then(books => {
-      if(books)
-        this.setState({books: updatedCopy})
-    })
+    if(addedBook) {
+      BooksAPI.get(book.id).then(resBook => {
+        updatedBooks.push(resBook)
+        this.setState({ books: updatedBooks })
+      })
+    } else {
+      this.setState({ books: updatedBooks })
+    }
   }
 
   render() {
@@ -47,25 +52,19 @@ class BooksApp extends Component {
                 <BookShelf
                   books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
                   shelfTitle={"Currently Reading"}
-                  onShelfChange={(book, shelf) => {
-                    this.changeShelf(book, shelf)
-                  }}
+                  updateShelfs={this.updateShelfs}
                 />
 
                 <BookShelf
                   books={this.state.books.filter(book => book.shelf === 'wantToRead')}
                   shelfTitle={"Want To Read"}
-                  onShelfChange={(book, shelf) => {
-                    this.changeShelf(book, shelf)
-                  }}
+                  updateShelfs={this.updateShelfs}
                 />
 
                 <BookShelf
                   books={this.state.books.filter(book => book.shelf === 'read')}
                   shelfTitle={"Read"}
-                  onShelfChange={(book, shelf) => {
-                    this.changeShelf(book, shelf)
-                  }}
+                  updateShelfs={this.updateShelfs}
                 />
               </div>
             </div>
@@ -79,9 +78,7 @@ class BooksApp extends Component {
         <Route path="/search" render={( {history} ) => (
           <SearchBooks
               books={this.state.books}
-              onShelfChange={(book, shelf) => {
-                this.changeShelf(book, shelf)
-              }}
+              updateShelfs={this.updateShelfs}
           />
         )}/>
       </div>

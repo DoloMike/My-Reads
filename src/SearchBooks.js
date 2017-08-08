@@ -58,7 +58,7 @@ class SearchBooks extends Component {
                 title={book.title}
                 authors={book.authors}
                 backgroundImage={book.imageLinks ? book.imageLinks.thumbnail : ''}
-                onShelfChange={this.props.onShelfChange}
+                updateShelfs={this.props.updateShelfs}
                 shelf={book.shelf ? book.shelf : ''}
               />
             )}
