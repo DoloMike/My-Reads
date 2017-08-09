@@ -28,10 +28,10 @@ class Book extends Component {
     const book = this.props
 
     return (
-      <li key={book.id}>
+      <li>
         <div className="book">
           <div className="book-top">
-            <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${book.backgroundImage})` }}></div>
+            <div className="book-cover" style={{ backgroundImage: `url(${book.backgroundImage})` }}></div>
               <div className="book-shelf-changer">
                 <IconMenu
                   style={styles.dropDownStyle}

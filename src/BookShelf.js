@@ -3,7 +3,7 @@ import Book from './Book'
 import sortBy from 'sort-by'
 
 const BookShelf = (props) => {
-  const { books, shelfTitle } = props
+  const { books, shelfTitle, updateShelves, shelfStates } = props
 
   if (books.length > 0)
     books.sort(sortBy('title'))
@@ -15,14 +15,14 @@ const BookShelf = (props) => {
         <ol className="books-grid">
           {books.map(book =>
             <Book
-              key={book.id}
+              key={book._titleId}
               id={book.id}
               title={book.title}
               authors={book.authors}
               backgroundImage={book.imageLinks? book.imageLinks.thumbnail : ''}
-              updateShelves={props.updateShelves}
+              updateShelves={updateShelves}
               shelf={book.shelf}
-              shelfStates={props.shelfStates}
+              shelfStates={shelfStates}
             />
           )}
         </ol>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { Route, Link } from 'react-router-dom'
-import BookShelf from './BookShelf'
+import { Route } from 'react-router-dom'
+import keyIndex from 'react-key-index';
+import BookShelfHolder from './BookShelfHolder'
 import SearchBooks from './SearchBooks'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
@@ -16,8 +17,12 @@ class BooksApp extends Component {
 
   componentDidMount() {
       BooksAPI.getAll().then(books => {
-        if(books)
+        if(books && !books.error) {
+          books = keyIndex(books, 1)
           this.setState({ books })
+        } else {
+          this.setState({ books: [] })
+        }
       })
   }
 
@@ -45,29 +50,13 @@ class BooksApp extends Component {
   render() {
     return (
       <div className="app">
-
         <Route exact path="/" render={() => (
-          <div className="list-books">
-            <div className="list-books-title">
-              <h1>MyReads</h1>
-            </div>
-
-            <div className="list-books-content">
-              {Object.keys(shelves).map(shelfKey =>
-                <BookShelf
-                  key={shelfKey}
-                  shelfTitle={shelves[shelfKey]}
-                  books={this.state.books.filter(book => book.shelf === shelfKey)}
-                  updateShelves={this.updateShelves}
-                  shelfStates={shelfStates}
-                />
-              )}
-            </div>
-
-            <div className="open-search">
-              <Link to="/search">Add a book</Link>
-            </div>
-          </div>
+          <BookShelfHolder
+            shelves={shelves}
+            books={this.state.books}
+            updateShelves={this.updateShelves}
+            shelfStates={shelfStates}
+          />
         )}/>
 
         <Route path="/search" render={( {history} ) => (

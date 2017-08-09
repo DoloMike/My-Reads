@@ -9,6 +9,10 @@ class SearchBooks extends Component {
     books: []
   }
 
+  componentDidMount() {
+    this.textInput.focus()
+  }
+
   clearQuery = () => {
     this.setState({query: ''})
   }
@@ -75,6 +79,7 @@ class SearchBooks extends Component {
           <Link to="/" className="close-search">Close</Link>
           <div className="search-books-input-wrapper">
             <input
+              ref={(input) => { this.textInput = input; }}
               type='text'
               placeholder='Search by title or author'
               value={query}
