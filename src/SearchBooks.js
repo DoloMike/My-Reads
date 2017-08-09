@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom'
 import Book from './Book'
 import * as BooksAPI from './BooksAPI'
 
+const formStyle = {
+  width: '100%'
+}
+
 class SearchBooks extends Component {
   state = {
     query: '',
@@ -17,9 +21,27 @@ class SearchBooks extends Component {
     this.setState({query: ''})
   }
 
+  resolveBooks(books) {
+    // Check shelved books to get shelf state for any book results that are already shelved.
+    const resBooks = books.map(b => {
+        const bookFound = this.props.shelvedBooks.find(shelvedBook => shelvedBook.id === b.id )
+
+        if(bookFound) {
+          return bookFound
+        } else {
+          b.shelf = this.props.unshelvedState
+          return b
+        }
+    })
+
+    return resBooks
+  }
+
   getQueryResults = (event) => {
+    // BooksAPI.search gives matching books without a shelf property.
     BooksAPI.search(this.state.query, 20).then(books => {
-      if (!books.error) {
+      if (books && !books.error) {
+        books = this.resolveBooks(books)
         this.setState({ books })
       } else {
         this.setState({ books: [] })
@@ -27,6 +49,22 @@ class SearchBooks extends Component {
     })
 
     event.preventDefault()
+  }
+
+  updateShelves = (book, shelf) => {
+    let bookFound = this.state.books.find(b => b.id === book.id )
+    bookFound.shelf = shelf
+
+    const books = this.state.books.map(b => {
+      if (b.id === bookFound.id) {
+        return bookFound
+      } else {
+        return b
+      }
+    })
+
+    this.setState({ books })
+    this.props.updateShelves(book, shelf)
   }
 
   render() {
@@ -37,7 +75,7 @@ class SearchBooks extends Component {
         <div className="search-books-bar">
           <Link to="/" className="close-search">Close</Link>
 
-          <form onSubmit={this.getQueryResults}>
+          <form style={formStyle} onSubmit={this.getQueryResults}>
             <div className="search-books-input-wrapper">
               <input
                 type='text'
@@ -58,8 +96,9 @@ class SearchBooks extends Component {
                 title={book.title}
                 authors={book.authors}
                 backgroundImage={book.imageLinks ? book.imageLinks.thumbnail : ''}
-                updateShelfs={this.props.updateShelfs}
+                updateShelves={this.updateShelves}
                 shelf={book.shelf ? book.shelf : ''}
+                shelfStates={this.props.shelfStates}
               />
             )}
           </ol>

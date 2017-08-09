@@ -14,16 +14,12 @@ const styles = {
 }
 
 class Book extends Component {
-  state = {
-    value: this.props.shelf
-  }
 
   handleShelfChange = (event, child, book) => {
-    let shelf = child.props.value
-
+    const shelf = child.props.value
     BooksAPI.update(book, shelf).then(books => {
-      if(books) {
-        this.props.updateShelfs(book, shelf)
+      if(books && !books.error) {
+        this.props.updateShelves(book, shelf)
       }
     })
   }
@@ -43,14 +39,13 @@ class Book extends Component {
                   anchorOrigin={{horizontal: 'left', vertical: 'top'}}
                   targetOrigin={{horizontal: 'left', vertical: 'top'}}
                   defaultValue={book.shelf}
-                  value={this.state.value}
+                  value={this.props.shelf}
                   onItemTouchTap={(event, child) => this.handleShelfChange(event, child, book)}
                   >
                     <MenuItem value="" disabled primaryText="Move to..." />
-                    <MenuItem value="currentlyReading" primaryText="Currently Reading" />
-                    <MenuItem value="wantToRead" primaryText="Want to Read" />
-                    <MenuItem value="read" primaryText="Read" />
-                    <MenuItem value="none" primaryText="None" />
+                    {Object.keys(this.props.shelfStates).map(shelfStateKey =>
+                      <MenuItem value={shelfStateKey} primaryText={this.props.shelfStates[shelfStateKey]} key={shelfStateKey}/>
+                    )}
                 </IconMenu>
               </div>
             </div>

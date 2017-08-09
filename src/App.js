@@ -5,6 +5,10 @@ import SearchBooks from './SearchBooks'
 import * as BooksAPI from './BooksAPI'
 import './App.css'
 
+const unshelvedState = {none: "None"}
+const shelves = { currentlyReading: 'Currently Reading', wantToRead: 'Want to Read', read: 'Read' }
+const shelfStates = Object.assign({}, shelves, unshelvedState)
+
 class BooksApp extends Component {
   state = {
     books: []
@@ -12,11 +16,12 @@ class BooksApp extends Component {
 
   componentDidMount() {
       BooksAPI.getAll().then(books => {
-        this.setState({ books })
+        if(books)
+          this.setState({ books })
       })
   }
 
-  updateShelfs = (book, shelf) => {
+  updateShelves = (book, shelf) => {
     let addedBook = true
     const updatedBooks = this.state.books.map(b => {
       if(b.id === book.id) {
@@ -48,25 +53,15 @@ class BooksApp extends Component {
             </div>
 
             <div className="list-books-content">
-              <div>
+              {Object.keys(shelves).map(shelfKey =>
                 <BookShelf
-                  books={this.state.books.filter(book => book.shelf === 'currentlyReading')}
-                  shelfTitle={"Currently Reading"}
-                  updateShelfs={this.updateShelfs}
+                  key={shelfKey}
+                  shelfTitle={shelves[shelfKey]}
+                  books={this.state.books.filter(book => book.shelf === shelfKey)}
+                  updateShelves={this.updateShelves}
+                  shelfStates={shelfStates}
                 />
-
-                <BookShelf
-                  books={this.state.books.filter(book => book.shelf === 'wantToRead')}
-                  shelfTitle={"Want To Read"}
-                  updateShelfs={this.updateShelfs}
-                />
-
-                <BookShelf
-                  books={this.state.books.filter(book => book.shelf === 'read')}
-                  shelfTitle={"Read"}
-                  updateShelfs={this.updateShelfs}
-                />
-              </div>
+              )}
             </div>
 
             <div className="open-search">
@@ -77,8 +72,10 @@ class BooksApp extends Component {
 
         <Route path="/search" render={( {history} ) => (
           <SearchBooks
-              books={this.state.books}
-              updateShelfs={this.updateShelfs}
+              shelvedBooks={this.state.books}
+              updateShelves={this.updateShelves}
+              shelfStates={shelfStates}
+              unshelvedState={Object.keys(unshelvedState)[0]}
           />
         )}/>
       </div>
