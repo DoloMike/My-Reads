@@ -3,43 +3,28 @@ import { Link } from 'react-router-dom'
 import Book from './Book'
 import * as BooksAPI from './BooksAPI'
 
-const formStyle = {
-  width: '100%'
-}
-
 class SearchBooks extends Component {
   state = {
     query: '',
     books: []
   }
 
-  updateQuery = (query) => {
-    this.setState({ query: query })
-  }
-
   clearQuery = () => {
     this.setState({query: ''})
   }
 
-  resolveBooks(books) {
-    // Check shelved books to get shelf state for any book results that are already shelved.
-    const resBooks = books.map(b => {
-        const bookFound = this.props.shelvedBooks.find(shelvedBook => shelvedBook.id === b.id )
-
-        if(bookFound) {
-          return bookFound
-        } else {
-          b.shelf = this.props.unshelvedState
-          return b
-        }
-    })
-
-    return resBooks
+  updateQuery = (query) => {
+    if(query) {
+      this.getQueryResults(query)
+    } else {
+      this.setState({ books: [] })
+    }
+    this.setState({ query: query })
   }
 
-  getQueryResults = (event) => {
+  getQueryResults(query) {
     // BooksAPI.search gives matching books without a shelf property.
-    BooksAPI.search(this.state.query, 20).then(books => {
+    BooksAPI.search(query, 20).then(books => {
       if (books && !books.error) {
         books = this.resolveBooks(books)
         this.setState({ books })
@@ -47,8 +32,22 @@ class SearchBooks extends Component {
         this.setState({ books: [] })
       }
     })
+  }
 
-    event.preventDefault()
+  resolveBooks(books) {
+    // Check shelved books to get shelf state for any book results that are already shelved.
+    const resBooks = books.map(b => {
+      const bookFound = this.props.shelvedBooks.find(shelvedBook => shelvedBook.id === b.id )
+
+      if(bookFound) {
+        return bookFound
+      } else {
+        b.shelf = this.props.unshelvedState
+        return b
+      }
+    })
+
+    return resBooks
   }
 
   updateShelves = (book, shelf) => {
@@ -74,18 +73,14 @@ class SearchBooks extends Component {
       <div className="search-books">
         <div className="search-books-bar">
           <Link to="/" className="close-search">Close</Link>
-
-          <form style={formStyle} onSubmit={this.getQueryResults}>
-            <div className="search-books-input-wrapper">
-              <input
-                type='text'
-                placeholder='Search by title or author'
-                value={query}
-                onChange={(event) => this.updateQuery(event.target.value)}
-              />
-            </div>
-          </form>
-
+          <div className="search-books-input-wrapper">
+            <input
+              type='text'
+              placeholder='Search by title or author'
+              value={query}
+              onChange={(event) => this.updateQuery(event.target.value)}
+            />
+          </div>
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
