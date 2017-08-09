@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Route } from 'react-router-dom'
-import keyIndex from 'react-key-index';
 import BookShelfHolder from './BookShelfHolder'
 import SearchBooks from './SearchBooks'
 import * as BooksAPI from './BooksAPI'
@@ -18,7 +17,6 @@ class BooksApp extends Component {
   componentDidMount() {
       BooksAPI.getAll().then(books => {
         if(books && !books.error) {
-          books = keyIndex(books, 1)
           this.setState({ books })
         } else {
           this.setState({ books: [] })
