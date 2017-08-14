@@ -40,7 +40,7 @@ class SearchBooks extends Component {
 
   resolveBooks(books) {
     // Check shelved books to get shelf state for any book results that are already shelved.
-    const resBooks = books.map(b => {
+    return books.map(b => {
       const bookFound = this.props.shelvedBooks.find(shelvedBook => shelvedBook.id === b.id )
 
       if(bookFound) {
@@ -50,12 +50,10 @@ class SearchBooks extends Component {
         return b
       }
     })
-
-    return resBooks
   }
 
   updateShelves = (book, shelf) => {
-    let bookFound = this.state.books.find(b => b.id === book.id )
+    const bookFound = this.state.books.find(b => b.id === book.id )
     bookFound.shelf = shelf
 
     const books = this.state.books.map(b => {

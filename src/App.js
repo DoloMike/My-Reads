@@ -7,7 +7,7 @@ import './App.css'
 
 const unshelvedState = {none: "None"}
 const shelves = { currentlyReading: 'Currently Reading', wantToRead: 'Want to Read', read: 'Read' }
-const shelfStates = Object.assign({}, shelves, unshelvedState)
+const shelfStates = {...shelves, ...unshelvedState}
 
 class BooksApp extends Component {
   state = {

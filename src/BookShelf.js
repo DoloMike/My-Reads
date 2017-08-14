@@ -1,19 +1,17 @@
 import React from 'react'
 import Book from './Book'
-import sortBy from 'sort-by'
+import sortBy from 'lodash/sortBy'
 
 const BookShelf = (props) => {
   const { books, shelfTitle, updateShelves, shelfStates } = props
-
-  if (books.length > 0)
-    books.sort(sortBy('title'))
+  const sortedBooks = books.length > 0 ? sortBy(books, 'title') : []
 
   return (
     <div className="bookshelf">
       <h2 className="bookshelf-title">{shelfTitle}</h2>
       <div className="bookshelf-books">
         <ol className="books-grid">
-          {books.map(book =>
+          {sortedBooks.map(book =>
             <Book
               key={book.id}
               id={book.id}
